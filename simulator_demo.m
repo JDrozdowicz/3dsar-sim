@@ -148,8 +148,22 @@ for iter_pos = 1:size(tx_pos,1)
         curr_point = [curr_point; curr_points{iter_faces}];
     end
     
+    % Calculate antenna gain factor for points
+    ant_gain = ones(size(curr_point,1),1);
+    % Include TX antenna pattern
+    for iter_ant = 1:size(points,1)
+        [az, el] = ant_orientation(tx_pos(iter_pos,:),curr_point(iter_ant,1:3).');
+        ant_gain(iter_ant) = ant_gain(iter_ant).*ant_pat(az,el);
+    end
+    % Include RX antenna pattern
+    for iter_ant = 1:size(points,1)
+        [az, el] = ant_orientation(rx_pos(iter_pos,:),curr_point(iter_ant,1:3).');
+        ant_gain(iter_ant) = ant_gain(iter_ant).*ant_pat(az,el);
+    end
+    curr_point(:,4) = curr_point(:,4).*ant_gain;
+    
     % Calculate response for points
-    raw_data(iter_pos,:) = sim_resp(fc, B, cell_size, start_range, end_range, curr_point, tx_pos(iter_pos,:), rx_pos(iter_pos,:), ant_pat, ant_pat);
+    raw_data(iter_pos,:) = sim_resp(fc, B, cell_size, start_range, end_range, curr_point, tx_pos(iter_pos,:), rx_pos(iter_pos,:));
     
 end
 
