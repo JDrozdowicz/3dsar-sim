@@ -36,7 +36,11 @@ vx = [0, -v(3), v(2); v(3), 0, -v(1); -v(2), v(1), 0];
 R = eye(3) + vx + vx^2 .*((1-c)/s^2);
 
 %Rotate vertices
-verticesr = (R*verticesc.').';
+if  abs(c -1)  < eps  %isequal(dr,iz)
+    verticesr = verticesc;
+else
+    verticesr = (R*verticesc.').';
+end
 
 verticesp = verticesr(:,1:2);
 
@@ -68,7 +72,12 @@ while iter_points < npoints
     
     if all(lambda > 0) && (sum(lambda) < 1)
         iter_points = iter_points + 1;
-        points(iter_points,:) = transpose(R)*[pointx;pointy;0]+centerp.';
+        if  abs(c -1)  < eps  %isequal(dr,iz)
+            points(iter_points,:) = [pointx;pointy;0]+centerp.';
+        else
+            points(iter_points,:) = transpose(R)*[pointx;pointy;0]+centerp.';
+        end
+        
     end
 
 
