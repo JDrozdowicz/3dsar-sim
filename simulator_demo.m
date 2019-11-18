@@ -85,7 +85,7 @@ rx_pos = tx_pos;
 
 
 % Antenna beam pattern definition (azimuth 20 deg BW, elevation 80 deg BW)
-ant_pat = @(az,el) abs(sinc(20*az/deg2rad(2)).^0.5.*sinc(2*el/deg2rad(80)).^0.5);
+ant_pat = @(az,el) abs(sinc(2*az/deg2rad(20)).^0.5.*sinc(2*el/deg2rad(80)).^0.5);
 
 % END OF INPUT PARAMETERS SECTION
 
