@@ -151,12 +151,12 @@ for iter_pos = 1:size(tx_pos,1)
     % Calculate antenna gain factor for points
     ant_gain = ones(size(curr_point,1),1);
     % Include TX antenna pattern
-    for iter_ant = 1:size(points,1)
+    for iter_ant = 1:size(curr_point,1)
         [az, el] = ant_orientation(tx_pos(iter_pos,:),curr_point(iter_ant,1:3).');
         ant_gain(iter_ant) = ant_gain(iter_ant).*ant_pat(az,el);
     end
     % Include RX antenna pattern
-    for iter_ant = 1:size(points,1)
+    for iter_ant = 1:size(curr_point,1)
         [az, el] = ant_orientation(rx_pos(iter_pos,:),curr_point(iter_ant,1:3).');
         ant_gain(iter_ant) = ant_gain(iter_ant).*ant_pat(az,el);
     end
