@@ -31,7 +31,7 @@ r_d = (sqrt(sum((tx_pos(1:3) - points(:,1:3)).^2,2)).' + sqrt(sum((rx_pos(1:3) -
 
 
 % raw data generation
-raw_data = sum(points(:,4).*sinc((r-r_d.')./(c/(2*B))).*exp(1j.*2.*(r-r_d.')./(c/fc).*2.*pi+points(:,5)),1);
+raw_data = sum(points(:,4).*sinc((r-r_d.')./(c/(2*B))).*exp(1j.*2.*(r-r_d.')./(c/fc).*2.*pi).*exp(1j.*points(:,5)),1);
 
 
 end
