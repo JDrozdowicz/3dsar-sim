@@ -17,9 +17,9 @@ close all;
 
 % Radar parameters
 % carrier frequency [Hz]
-fc = 24e9; 
+fc = 11e9; 
 % bandwidth [Hz]
-B = 1000e6; 
+B = 100e6; 
 
 % Constants
 % speed of light [m/s]
@@ -33,7 +33,7 @@ end_range = 100;
 % range cell size [m]
 cell_size = c/(2*B)/5;
 % face sampling density [m]
-sampling_density = 50*cell_size;
+sampling_density = cell_size;
 
 % Scene definition
 % Scene can be defined by hand (as in this example), but also imported from
@@ -41,8 +41,8 @@ sampling_density = 50*cell_size;
 % Scene consists of points and faces defined by vertices
 % Reflecting points, not belonging to any face (x,y,z,magnitude,phase)
 point = [
-    5,0,0,1,0;
-    5,0,50,0.5,pi/2;
+    5,0,0,0.5,0;
+    5,0,50,1,pi/2;
     ];
 % Vertices - non reflecting points, forming faces (x,y,z)
 vertex = [
@@ -59,7 +59,7 @@ vertex = [
 face(1).v = [1,2,3];
 face(2).v = [3,4,1];
 [face(1:2).transparency] = deal(0.5);
-[face(1:2).roughness] = deal(0.6);
+[face(1:2).roughness] = deal(0.8);
 [face(1:2).magnitude] = deal(0.8);
 [face(1:2).phase] = deal(0);
 
@@ -73,8 +73,8 @@ face(4).v = [7,8,5];
 
 % Antenna trajectory definition
 % Antenna positions [x,y,z,dir_x,dir_y,dir_z,rotation)
-tmp_y = (-100:1:100).';
-tmp_graz_angle = -10;
+tmp_y = (-50:.5:50).';
+tmp_graz_angle = 0;
 tmp_dir_y = 0;
 tmp_dir_x = cosd(-tmp_graz_angle);
 tmp_dir_z = sind(-tmp_graz_angle);
@@ -85,7 +85,7 @@ rx_pos = tx_pos;
 
 
 % Antenna beam pattern definition (azimuth 20 deg BW, elevation 80 deg BW)
-ant_pat = @(az,el) abs(sinc(2*az/deg2rad(20)).^0.5.*sinc(2*el/deg2rad(80)).^0.5);
+ant_pat = @(az,el) abs(sinc(2*az/deg2rad(80)).^0.5.*sinc(2*el/deg2rad(5)).^0.5);
 
 % END OF INPUT PARAMETERS SECTION
 
@@ -97,15 +97,20 @@ end
 
 % Plot scene
 figure;
+revspring = flipud(colormap('spring'));
 % Plot faces
 hold on;
 for iter_faces = 1:numel(face)
-    fill3(vertex(face(iter_faces).v,1),vertex(face(iter_faces).v,2),vertex(face(iter_faces).v,3), face(iter_faces).magnitude, 'FaceAlpha', face(iter_faces).transparency );
+    fill3(vertex(face(iter_faces).v,1),vertex(face(iter_faces).v,2),vertex(face(iter_faces).v,3), face(iter_faces).magnitude, 'FaceAlpha', 1 - face(iter_faces).transparency, 'EdgeColor', 'k', 'EdgeAlpha', 0.2);
 end
+colormap(revspring);
+caxis([0 1]);
+clrbr = colorbar;
+clrbr.Label.String = 'Magnitude [dB]';
 %Plot points derived from faces:
-for iter_faces = 1:numel(face)
-    plot3(points{iter_faces}(:,1),points{iter_faces}(:,2),points{iter_faces}(:,3),'.k');
-end
+% for iter_faces = 1:numel(face)
+%     scatter3(points{iter_faces}(:,1), points{iter_faces}(:,2), points{iter_faces}(:,3), 1+20*face(iter_faces).magnitude, revspring(ceil(face(iter_faces).magnitude.*size(revspring,1)),:), 'filled', 'MarkerEdgeColor', 'k', 'MarkerEdgeAlpha', 0.1, 'MarkerFaceAlpha', 1 - face(iter_faces).transparency);
+% end
 % Plot trajectory
 plot3(tx_pos(:,1),tx_pos(:,2),tx_pos(:,3),'r-x');
 plot3(rx_pos(:,1),rx_pos(:,2),rx_pos(:,3),'b-o');
@@ -113,6 +118,7 @@ plot3(rx_pos(:,1),rx_pos(:,2),rx_pos(:,3),'b-o');
 scatter3(point(:,1),point(:,2),point(:,3),1+50*point(:,4),point(:,4),'filled','MarkerEdgeColor','k');
 
 hold off;
+grid;
 
 axis equal;
 xlabel('x [m]');
@@ -171,4 +177,10 @@ figure;
 imagesc(start_range:cell_size:end_range,tmp_y,db(abs(raw_data)));
 xlabel('x [m]');
 ylabel('y [m]');
+colormap(spring);
+clrbr = colorbar;
+clrbr.Label.String = 'Magnitude [dB]';
+[~,cmax] = caxis;
+caxis(cmax+[-100, 0]);
+
 

@@ -115,7 +115,7 @@ figure;
 % Plot faces
 hold on;
 for iter_faces = 1:numel(face)
-    fill3(vertex(face(iter_faces).v,1),vertex(face(iter_faces).v,2),vertex(face(iter_faces).v,3), face(iter_faces).magnitude, 'FaceAlpha', 1- face(iter_faces).transparency,'EdgeColor','k', 'EdgeAlpha',0.2);
+    fill3(vertex(face(iter_faces).v,1),vertex(face(iter_faces).v,2),vertex(face(iter_faces).v,3), face(iter_faces).magnitude, 'FaceAlpha', 1 - face(iter_faces).transparency, 'EdgeColor', 'k', 'EdgeAlpha', 0.2);
 end
 % %Plot points derived from faces:
 % for iter_faces = 1:numel(face)
