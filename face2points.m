@@ -84,7 +84,7 @@ while iter_points < npoints
     
 end
 
-points = [points, magnitude.*ones(size(points,1),1), phase.*ones(size(points,1),1)];
+points = [points, magnitude./npoints.*ones(size(points,1),1), phase.*ones(size(points,1),1)];
 
 end
 
