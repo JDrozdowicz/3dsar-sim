@@ -141,10 +141,6 @@ ylabel('y [m]');
 zlabel('z [m]');
 view(3);
 
-revspring = flipud(colormap('spring'));
-colormap(revspring);
-
-
 figure;
 plot(start_range:cell_size:end_range,abs(raw_data));
 xlabel('x [m]');

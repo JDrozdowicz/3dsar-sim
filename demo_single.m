@@ -17,11 +17,11 @@ close all;
 
 % Radar parameters
 % carrier frequency [Hz]
-fc = 11e9; 
+fc = 1e9; 
 % bandwidth [Hz]
-B = 100e6;
+B = 10e6;
 % pulse duration [s]
-T = 1e-6;
+T = 1e-3;
 
 % Constants
 % speed of light [m/s]
@@ -31,9 +31,9 @@ c = 3e8;
 % start range [m]
 start_range = 0;
 % end range [m]
-end_range = 100;
+end_range = 500;
 % range cell size [m]
-cell_size = c/(2*B)/5;
+cell_size = c/(2*B)/10;
 % face sampling density [m]
 sampling_density = cell_size;
 
@@ -43,51 +43,25 @@ sampling_density = cell_size;
 % Scene consists of points and faces defined by vertices
 % Reflecting points, not belonging to any face (x,y,z,magnitude,phase)
 point = [
-    5,0,0,0.5,0;
-    5,0,50,1,pi/2;
+    100,0,0,1,0;
+    400,0,0,0.5,pi/2;
+    400,0,100,0.5,-pi/2;
     ];
 % Vertices - non reflecting points, forming faces (x,y,z)
-vertex = [
-    -10,-10,-10;
-    -10,-10,10;
-    -10,10,10;
-    -10,10,-10;
-    -20,-5,-5;
-    -20,-5,5;
-    -20,5,5;
-    -20,5,-5;
-    ];
+vertex = [];
 % Reflecting faces (v1,v2,v3,transparency,roughness,magnitude,phase)
-face(1).v = [1,2,3];
-face(2).v = [3,4,1];
-[face(1:2).transparency] = deal(0.5);
-[face(1:2).roughness] = deal(0.8);
-[face(1:2).magnitude] = deal(0.8);
-[face(1:2).phase] = deal(0);
-
-
-face(3).v = [5,6,7];
-face(4).v = [7,8,5];
-[face(3:4).transparency] = deal(0.1);
-[face(3:4).roughness] = deal(0.1);
-[face(3:4).magnitude] = deal(0.5);
-[face(3:4).phase] = deal(0);
+face = {};
+points = [];
 
 % Antenna trajectory definition
 % Antenna positions [x,y,z,dir_x,dir_y,dir_z,rotation)
-tmp_y = (-50:.5:50).';
-tmp_graz_angle = 0;
-tmp_dir_y = 0;
-tmp_dir_x = cosd(-tmp_graz_angle);
-tmp_dir_z = sind(-tmp_graz_angle);
-
-
-tx_pos = [-50*ones(size(tmp_y)),tmp_y,0*ones(size(tmp_y)),tmp_dir_x*ones(size(tmp_y)),tmp_dir_y*ones(size(tmp_y)),tmp_dir_z*ones(size(tmp_y)),0*ones(size(tmp_y))];
+tx_pos = [0,0,0,1,0,0,0];
 rx_pos = tx_pos;
 
 
-% Antenna beam pattern definition (azimuth 20 deg BW, elevation 80 deg BW)
-ant_pat = @(az,el) abs(sinc(2*az/deg2rad(80)).^0.5.*sinc(2*el/deg2rad(5)).^0.5);
+
+% Antenna beam pattern definition (omnidirectional)
+ant_pat = @(az,el) 1;
 
 % END OF INPUT PARAMETERS SECTION
 
@@ -101,12 +75,12 @@ end
 figure;
 % Plot faces
 hold on;
-for iter_faces = 1:numel(face)
-    fill3(vertex(face(iter_faces).v,1),vertex(face(iter_faces).v,2),vertex(face(iter_faces).v,3), face(iter_faces).magnitude, 'FaceAlpha', 1 - face(iter_faces).transparency, 'EdgeColor', 'k', 'EdgeAlpha', 0.2);
-end
+% for iter_faces = 1:numel(face)
+%     fill3(vertex(face(iter_faces).v,1),vertex(face(iter_faces).v,2),vertex(face(iter_faces).v,3), face(iter_faces).magnitude, 'FaceAlpha', 1 - face(iter_faces).transparency, 'EdgeColor', 'k', 'EdgeAlpha', 0.2);
+% end
 caxis([0 1]);
 clrbr = colorbar;
-clrbr.Label.String = 'Magnitude [dB]';
+clrbr.Label.String = 'Magnitude';
 %Plot points derived from faces:
 % for iter_faces = 1:numel(face)
 %     scatter3(points{iter_faces}(:,1), points{iter_faces}(:,2), points{iter_faces}(:,3), 1+20*face(iter_faces).magnitude, revspring(ceil(face(iter_faces).magnitude.*size(revspring,1)),:), 'filled', 'MarkerEdgeColor', 'k', 'MarkerEdgeAlpha', 0.1, 'MarkerFaceAlpha', 1 - face(iter_faces).transparency);
@@ -115,16 +89,17 @@ clrbr.Label.String = 'Magnitude [dB]';
 plot3(tx_pos(:,1),tx_pos(:,2),tx_pos(:,3),'r-x');
 plot3(rx_pos(:,1),rx_pos(:,2),rx_pos(:,3),'b-o');
 % Plot points
-scatter3(point(:,1),point(:,2),point(:,3),1+50*point(:,4),point(:,4),'filled','MarkerEdgeColor','k');
+scatter(point(:,1),point(:,3),1+50*point(:,4),point(:,4),'filled','MarkerEdgeColor','k');
 
 hold off;
 grid;
 
+xlim([0 500]);
 axis equal;
 xlabel('x [m]');
 ylabel('y [m]');
 zlabel('z [m]');
-view(3);
+% view(0,0);
 
 % MAIN LOOP
 
@@ -174,12 +149,12 @@ for iter_pos = 1:size(tx_pos,1)
 end
 
 figure;
-imagesc(start_range:cell_size:end_range,tmp_y,db(abs(raw_data)));
-xlabel('x [m]');
-ylabel('y [m]');
-clrbr = colorbar;
-clrbr.Label.String = 'Magnitude [dB]';
-[~,cmax] = caxis;
-caxis(cmax+[-100, 0]);
+yyaxis left
+plot(start_range:cell_size:end_range,abs(raw_data));
+xlabel('distance x [m]');
+ylabel('Magnitude');
+yyaxis right
+plot(start_range:cell_size:end_range,(angle(raw_data)));
+ylabel('Angle');
 
 
