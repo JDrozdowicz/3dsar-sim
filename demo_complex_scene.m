@@ -20,6 +20,8 @@ close all;
 fc = 24e9; 
 % bandwidth [Hz]
 B = 1000e6; 
+% pulse duration [s]
+T = 1e-3;
 
 % Constants
 % speed of light [m/s]
@@ -106,7 +108,7 @@ for iter_pos = 1:size(tx_pos,1)
     curr_point(:,4) = curr_point(:,4).*ant_gain;
     
     % Calculate response for points
-    raw_data(iter_pos,:) = sim_resp(fc, B, cell_size, start_range, end_range, curr_point, tx_pos(iter_pos,:), rx_pos(iter_pos,:));
+    raw_data(iter_pos,:) = sim_resp(fc, B, T, cell_size, start_range, end_range, curr_point, tx_pos(iter_pos,:), rx_pos(iter_pos,:));
     
 end
 
