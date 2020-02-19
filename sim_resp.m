@@ -25,14 +25,16 @@ c = 3e8;
 
 % range axis
 r = start_range:cell_size:end_range;
+% time axis
+t = 2*r/c;
 
 % bistatic range for each point
 r_d = (sqrt(sum((tx_pos(1:3) - points(:,1:3)).^2,2)).' + sqrt(sum((rx_pos(1:3) - points(:,1:3)).^2,2)).')/2;
-
+% bistatic time for each point
+t_d = 2*r_d/c;
 
 % raw data generation
-raw_data = sum(points(:,4).*sinc((r-r_d.')./(c/(2*B))).*exp(1j.*2.*(r-r_d.')./(c/fc).*2.*pi).*exp(1j.*points(:,5)),1);
-
+raw_data = sum(points(:,4).*sinc((t-t_d.').*B).*exp(1j.*2.*pi.*(t-t_d.').*fc).*exp(1j.*points(:,5)),1);
 
 end
 
