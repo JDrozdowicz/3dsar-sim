@@ -13,14 +13,16 @@
 % limitations under the License.
 
 
-function [raw_data] = sim_resp(fc, B, T, cell_size, start_range, end_range, points, tx_pos, rx_pos)
+function [raw_data] = sim_resp(fc, B, T, cell_size, start_range, end_range, points, tx_pos, rx_pos, fd)
 %SIM_RESP Calculate radar response.
 %   Calculates FMCW radar response for given parameters, scene and antenna
 %   pairs positions. For monostatic radar use tx_pos = rx_pos.
 %   size(tx_pos) must be equal to size(rx_pos)
 
-% Set the Doppler frequency to 0 for this version
-fd = 0;
+% Check the Doppler Frequency
+if ~exist('fd', 'var')
+    fd = 0;
+end
 
 % Modulation speed
 alpha = B/T;
@@ -40,7 +42,7 @@ r_d = (sqrt(sum((tx_pos(1:3) - points(:,1:3)).^2,2)).' + sqrt(sum((rx_pos(1:3) -
 t_d = 2*r_d/c;
 
 % raw data generation
-raw_data = sum(points(:,4).*(1-abs((t-t_d.')/T)).*sinc((fd + alpha.*(t-t_d.')).*T.*(1-abs((t-t_d.')/T))).*exp(-1j.*pi.*fd.*(t-t_d.')).*exp(1j.*2.*pi.*(t-t_d.').*fc).*exp(1j.*2.*pi.*(t-t_d.').*fc).*exp(1j.*points(:,5)),1);
+raw_data = sum(points(:,4).*(1-abs((t-t_d.')/T)).*sinc((fd + alpha.*(t-t_d.')).*T.*(1-abs((t-t_d.')/T))).*exp(-1j.*pi.*fd.*(t-t_d.')).*exp(1j.*2.*pi.*(t-t_d.').*fc).*exp(1j.*points(:,5)),1);
 
 end
 
