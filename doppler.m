@@ -27,16 +27,16 @@ c = 3e8;
 % negative velocity
 
 % Calculate the relative positions:
-pos_rel_tx = pos(1:3) - tx_pos(1:3);
-pos_rel_rx = pos(1:3) - rx_pos(1:3);
+pos_rel_tx = pos(:,1:3) - tx_pos(1:3);
+pos_rel_rx = pos(:,1:3) - rx_pos(1:3);
 
 % Normalize
-pos_rel_tx_norm = pos_rel_tx/norm(pos_rel_tx);
-pos_rel_rx_norm = pos_rel_rx/norm(pos_rel_rx);
+pos_rel_tx_norm = pos_rel_tx./norm(pos_rel_tx);
+pos_rel_rx_norm = pos_rel_rx./norm(pos_rel_rx);
 
 % Relative velocity
-v_rel_tx = dot(v,pos_rel_tx_norm);
-v_rel_rx = dot(v,pos_rel_rx_norm);
+v_rel_tx = dot(v,pos_rel_tx_norm,2);
+v_rel_rx = dot(v,pos_rel_rx_norm,2);
 
 % Doppler frequency
 fd = -(v_rel_tx+v_rel_rx)/c*fc;
